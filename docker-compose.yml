@@ -1,0 +1,18 @@
+version: "3"
+services:
+  web-app:
+    build: .
+    container_name: 'api_connec_to_redis'
+    command: sh -c 'npm install; npm start'
+    ports:
+      - '3000:3000'
+    volumes:
+      - /home/alex/Descargas/api (1) (1)/api/api_prueba:/api_prueba
+    depends_on:
+      - "db-redis-node"
+
+  db-redis-node:
+    container_name: 'db_redis_node_example'
+    image: redis
+    ports:
+      - "6379:6379"
