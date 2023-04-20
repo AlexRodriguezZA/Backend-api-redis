@@ -1,5 +1,6 @@
 const redis = require("redis");
 var express = require("express");
+const cors = require('cors');
 
 const redisclient = redis.createClient({
   url: "redis://db-redis-node:6379",
@@ -7,6 +8,8 @@ const redisclient = redis.createClient({
 redisclient.connect();
 
 var app = express();
+
+app.use(cors());
 
 redisclient.on("connect", function () {
   console.log("Connected to redis");
@@ -59,11 +62,13 @@ redisclient.on("error", (err) => {
     redisclient.LPUSH('Chapter 8', 'disponible')
 });*/
 
+
+
 app.get("/capitulos", async function (req, res) {
-  let todosLosCapitulos = {};
+  let todosLosCapitulos = [];
   for (let i = 1; i <= 8; i++) {
     let cap = await redisclient.LRANGE(`Chapter ${i}`, 0, -1);
-    todosLosCapitulos[`Capitulo ${i}`] = cap.reduce((obj, val, index) => {
+    let capitulo = cap.reduce((obj, val, index) => {
       if (index === 0) {
         obj["estado"] = val;
       }
@@ -73,12 +78,16 @@ app.get("/capitulos", async function (req, res) {
       if (index === 2) {
         obj["nombre"] = val;
       }
-
+      obj["capitulo"] = `Capitulo ${i}`;
       return obj;
     }, {});
+    todosLosCapitulos.push(capitulo);
   }
-  res.json(todosLosCapitulos);
+  res.json(Object.values(todosLosCapitulos));
 });
+
+//POdemos servir las imagenes al frontend con esta opcion
+app.use('/Imagenes', express.static("Pictures"));
 
 app.get("/reservar/:capitulo", async function (req, res) {
   const capitulo = req.params.capitulo;

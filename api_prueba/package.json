@@ -10,8 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "redis": "*",
-    "express": "*"
+    "cors": "^2.8.5",
+    "express": "*",
+    "redis": "*"
   },
   "devDependencies": {
     "nodemon": "*"
